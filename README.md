@@ -1,2 +1,2 @@
 # TicTacToe
-TicTacToe Application with 2 player and 1 player implementation.
+TicTacToe Application with 3 player, 2 player, and 1 player implementation.
