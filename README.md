@@ -8,4 +8,4 @@ This Tic-Tac-Toe application is a fun realization of the classic game of Tic-Tac
 ## Soucre Code: 
 [src folder](https://github.com/HenryChristiansen/TicTacToe/blob/main/src)
 ## Exported App (.jar file):
-[Tic-Tac-Toe](https://github.com/HenryChristiansen/TicTacToe/blob/main/src/TicTacToe.jar)
+[src folder](https://github.com/HenryChristiansen/TicTacToe/blob/main/src)
