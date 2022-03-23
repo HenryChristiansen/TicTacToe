@@ -14,6 +14,7 @@ public class TicTacToe extends JFrame {
 	public static boolean singlePlayer = false;
 	public static boolean xTurn = true;
 	public static boolean play = false;
+	public static boolean randomTurnTwoPlayer = false;
 	JLabel title = new JLabel("Tic Tac Toe");
 	static JLabel turn = new JLabel("X's Turn");
 	CustomButton[][] g = new CustomButton[3][3];
@@ -27,6 +28,9 @@ public class TicTacToe extends JFrame {
 	JLabel modeText = new JLabel("Mode: Two Player");
 	JPanel gamePanel = new JPanel(new GridLayout(3, 3));
 	static Object repeat = new Object();
+	static JLabel playGameError = new JLabel("Press Play to Start");
+	Random randomGenerator = new Random();
+	int modeHelper = 2;
 
 	TicTacToe() {
 		this.setSize(635, 739);
@@ -35,9 +39,13 @@ public class TicTacToe extends JFrame {
 		this.setLayout(null);
 		modeChangeError.setForeground(Color.red);
 		modeChangeError.setFont(new Font("Garamond", Font.PLAIN, 17));
-		modeChangeError.setBounds(450, 63, 150, 20);
+		modeChangeError.setBounds(450, 66, 150, 20);
 		modeChangeError.setVisible(false);
-		modeText.setBounds(250, 63, 200, 20);
+		playGameError.setForeground(Color.red);
+		playGameError.setFont(new Font("Garamond", Font.PLAIN, 17));
+		playGameError.setVisible(false);
+		playGameError.setBounds(50,66,150,20);
+		modeText.setBounds(250, 66, 200, 20);
 		modeText.setFont(new Font("Garamond", Font.PLAIN, 17));
 		modeText.setForeground(Color.white);
 		playAgain.setBounds(50, 24, 120, 40);
@@ -104,6 +112,8 @@ public class TicTacToe extends JFrame {
 					play = true;
 					playAgain.setVisible(false);
 					turn.setVisible(true);
+					playGameError.setVisible(false);
+					modeChangeError.setVisible(false);
 					xTurn = true;
 					turn.setText("X's Turn");
 					synchronized (repeat) {
@@ -119,24 +129,42 @@ public class TicTacToe extends JFrame {
 					playButton.setVisible(false);
 					play = true;
 					turn.setVisible(true);
+					playGameError.setVisible(false);
 				}
 			}
 		});
 
 		switchGameMode.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (singlePlayer && !play) {
+				// 1 = Two Player | 2 = Single Player | 3 = Random Turn
+				
+				if (modeHelper == 1 && !play) {
+					modeHelper = 2;
 					singlePlayer = false;
+					randomTurnTwoPlayer = false;
+					modeText.setBounds(250, 66, 200, 20);
 					modeText.setText("Mode: Two Player");
 					modeChangeError.setVisible(false);
-				} else if (!singlePlayer && !play) {
+				} else if (modeHelper == 2 && !play) {
+					modeHelper = 3;
 					singlePlayer = true;
+					randomTurnTwoPlayer = false;
+					modeText.setBounds(246, 66, 200, 20);
 					modeText.setText("Mode: Single Player");
+					modeChangeError.setVisible(false);
+				} else if (modeHelper == 3 && !play) {
+					modeHelper = 1;
+					singlePlayer = false;
+					randomTurnTwoPlayer = true;
+					modeText.setBounds(200, 66, 460, 20);
+					modeText.setText("Mode: Two Player Random Turn");
 					modeChangeError.setVisible(false);
 				} else {
 					modeChangeError.setVisible(true);
 				}
+				
 			}
+				
 		});
 
 		this.add(title);
@@ -147,6 +175,7 @@ public class TicTacToe extends JFrame {
 		this.add(modeText);
 		this.add(modeChangeError);
 		this.add(playButton);
+		this.add(playGameError);
 
 		this.setResizable(false);
 		this.revalidate();
@@ -164,6 +193,60 @@ public class TicTacToe extends JFrame {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+			}
+			
+			while(play && randomTurnTwoPlayer) {
+				synchronized (syncObject) {
+					try {
+						syncObject.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				int randomNum = game.randomGenerator.nextInt(2);
+				
+				if (randomNum == 0) {
+					turn.setText("X's Turn");
+				} else if (randomNum == 1) {
+					turn.setText("O's Turn");
+				} else {
+					System.out.println("Error");
+				}
+				
+				if (checkIfXWin(game.g)) {
+					play = false;
+					turn.setVisible(false);
+					int[] f = createLine(game.g);
+			
+					game.g[f[0]][f[1]].setWinBorder(6);
+					game.g[f[2]][f[3]].setWinBorder(6);
+					game.g[f[4]][f[5]].setWinBorder(6);
+					
+					game.playAgain.setVisible(true);
+				} else if (checkIfOWin(game.g)) {
+					play = false;
+					turn.setVisible(false);
+					int[] f = createLine(game.g);
+			
+					game.g[f[0]][f[1]].setWinBorder(6);
+					game.g[f[2]][f[3]].setWinBorder(6);
+					game.g[f[4]][f[5]].setWinBorder(6);
+					
+					game.playAgain.setVisible(true);
+				} else if (checkCatFight(game.g)) {
+					play = false;
+					turn.setVisible(false);
+					game.playAgain.setVisible(true);
+					for (int i = 0; i < 3; i++) {
+						for (int j = 0; j < 3; j++) {
+							game.g[i][j].setWinBorder(2);
+						}
+					}
+				} else {
+					;
+				}
+				
 			}
 
 			while (play && singlePlayer) {
@@ -189,28 +272,27 @@ public class TicTacToe extends JFrame {
 					e.printStackTrace();
 				}
 				
-				game.g[a[0]][a[1]].computerGoHere();
-				game.g[a[0]][a[1]].setEmpty(false);
+//				game.g[a[0]][a[1]].computerGoHere();
+//				game.g[a[0]][a[1]].setEmpty(false);
 				
-				//MAKES IT DUMB
-//				boolean validMove = false;
-//				int counter = 0;
-//				while (!validMove) {
-//					counter++;
-//					if (game.g[a[0]][a[1]].getText().equals("X") || game.g[a[0]][a[1]].getText().equals("O")) {
-//						validMove = false;
-//					} else {
-//						validMove = true;
-//						game.g[a[0]][a[1]].computerGoHere();
-//						game.g[a[0]][a[1]].setEmpty(false);
-//					}
-//					if (counter > 10) {
-//						validMove = true;
-//						int[] f = new int[2];
-//						f = game.chooseRandom(game.g);
-//						game.g[f[0]][f[1]].computerGoHere();
-//					}
-//				}
+				boolean validMove = false;
+				int counter = 0;
+				while (!validMove) {
+					counter++;
+					if (game.g[a[0]][a[1]].getText().equals("X") || game.g[a[0]][a[1]].getText().equals("O")) {
+						validMove = false;
+					} else {
+						validMove = true;
+						game.g[a[0]][a[1]].computerGoHere();
+						game.g[a[0]][a[1]].setEmpty(false);
+					}
+					if (counter > 10) {
+						validMove = true;
+						int[] f = new int[2];
+						f = game.chooseRandom(game.g);
+						game.g[f[0]][f[1]].computerGoHere();
+					}
+				}
 
 				
 				turn.setText("X's Turn");
@@ -423,7 +505,6 @@ public class TicTacToe extends JFrame {
 				if (!takenCareOf) {
 					returnValues[0] = numbs[4];
 					returnValues[1] = numbs[5];
-					System.out.println("Took care of imminent victory.");
 					hasMove = true;
 					printer.println(numbs[0] + " " + numbs[1] + " " + numbs[2] + " " + numbs[3] + " " + numbs[4] + " "
 							+ numbs[5]);
