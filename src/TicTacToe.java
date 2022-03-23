@@ -93,7 +93,7 @@ public class TicTacToe extends JFrame {
 		playAgain.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (playAgain.isVisible()) {
-					File f = new File("C:\\Users\\henry\\eclipse-workspace\\TicTacToe\\src\\Computer_Out.txt");
+					File f = new File("./files/Computer_Out.txt");
 					PrintStream printer;
 					try {
 						printer = new PrintStream(f);
@@ -469,8 +469,8 @@ public class TicTacToe extends JFrame {
 	}
 
 	private int[] computerMove(CustomButton[][] h) throws FileNotFoundException {
-		File in = new File("C:\\Users\\henry\\eclipse-workspace\\TicTacToe\\src\\Must_Go_Here_Scenarios.txt");
-		File out = new File("C:\\Users\\henry\\eclipse-workspace\\TicTacToe\\src\\Computer_Out.txt");
+		File in = new File("./files/Must_Go_Here_Scenarios.txt");
+		File out = new File("./files/Computer_Out.txt");
 		Scanner scan = new Scanner(in);
 		PrintStream printer = new PrintStream(out);
 		Scanner computerScanner = new Scanner(out);
@@ -538,7 +538,7 @@ public class TicTacToe extends JFrame {
 
 	private int[] oHasTwoCoordinates(CustomButton[][] h) throws FileNotFoundException {
 		int[] c = new int[2];
-		File in = new File("C:\\Users\\henry\\eclipse-workspace\\TicTacToe\\src\\Must_Go_Here_Scenarios.txt");
+		File in = new File("./files/Must_Go_Here_Scenarios.txt");
 		Scanner scan = new Scanner(in);
 		while (scan.hasNextLine()) {
 			String[] numbers = scan.nextLine().split(" ");
@@ -560,7 +560,7 @@ public class TicTacToe extends JFrame {
 	
 	private boolean oHasTwo(CustomButton h[][]) throws FileNotFoundException {
 		boolean b = false;
-		File in = new File("C:\\Users\\henry\\eclipse-workspace\\TicTacToe\\src\\Must_Go_Here_Scenarios.txt");
+		File in = new File("./files/Must_Go_Here_Scenarios.txt");
 		Scanner scan = new Scanner(in);
 		while (scan.hasNextLine() && !b) {
 			String[] numbers = scan.nextLine().split(" ");
