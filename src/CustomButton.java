@@ -2,7 +2,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 
@@ -26,7 +25,10 @@ public class CustomButton extends JButton {
 
 		this.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (isEmpty && !TicTacToe.singlePlayer && TicTacToe.play) {
+				if (!TicTacToe.play) {
+					TicTacToe.playGameError.setVisible(true);
+				}
+				if (isEmpty && !TicTacToe.singlePlayer && TicTacToe.play && !TicTacToe.randomTurnTwoPlayer) {
 					if (TicTacToe.xTurn) {
 						isEmpty = false;
 						setText("X");
@@ -46,10 +48,22 @@ public class CustomButton extends JButton {
 					}
 				}
 
-				if (isEmpty && TicTacToe.singlePlayer && TicTacToe.turn.getText().equals("X's Turn")
+				if (!TicTacToe.randomTurnTwoPlayer && isEmpty && TicTacToe.singlePlayer && TicTacToe.turn.getText().equals("X's Turn")
 						&& TicTacToe.play) {
 					setText("X");
 					isEmpty = false;
+					synchronized (TicTacToe.syncObject) {
+						TicTacToe.syncObject.notify();
+					}
+				}
+				
+				if (isEmpty && TicTacToe.randomTurnTwoPlayer && TicTacToe.play) {
+					isEmpty = false;
+					if (TicTacToe.turn.getText().equals("X's Turn")) {
+						setText("X");
+					} else {
+						setText("O");
+					}
 					synchronized (TicTacToe.syncObject) {
 						TicTacToe.syncObject.notify();
 					}
