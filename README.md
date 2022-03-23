@@ -1,2 +1,2 @@
 # TicTacToe
-TicTacToe Application with 3 player, 2 player, and 1 player implementation.
+TicTacToe Application with three fun game modes: Single Player, Two Player, and Two Player Random Turn (where the computer randomly decides who's turn it is)
